@@ -7,9 +7,9 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\PreferenceController;
 
 /*
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------
 | API Routes
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
@@ -17,25 +17,17 @@ use App\Http\Controllers\PreferenceController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-
-
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::post('/password-reset', [AuthController::class, 'resetPassword']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/articles', [ArticleController::class, 'index']);
     Route::get('/articles/{id}', [ArticleController::class, 'show']);
 });
 
-
-
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/preferences', [PreferenceController::class, 'show']);
     Route::post('/preferences', [PreferenceController::class, 'store']);
     Route::get('/personalized-feed', [PreferenceController::class, 'fetchPersonalizedFeed']);

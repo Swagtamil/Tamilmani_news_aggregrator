@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ArticleController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
+
+
+Route::get('/', [ArticleController::class, 'dashboard']);  
+
+Route::get('/articles', [ArticleController::class, 'dashboard']); 
+
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/articles');
 });

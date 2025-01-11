@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 
 class PreferenceController extends Controller
 {
-     /**
+    /**
      * Show the authenticated user's preferences.
-     *
      * @OA\Get(
      *     path="/api/preferences",
      *     summary="Get user preferences",
@@ -24,15 +23,13 @@ class PreferenceController extends Controller
      *     )
      * )
      */
-
     public function show(Request $request)
     {
-        return $request->user()->preferences;
+        return response()->json($request->user()->preferences);
     }
 
     /**
      * Store or update the user's preferences.
-     *
      * @OA\Post(
      *     path="/api/preferences",
      *     summary="Store or update user preferences",
@@ -64,16 +61,14 @@ class PreferenceController extends Controller
      *     )
      * )
      */
-
     public function store(Request $request)
     {
         $preferences = $request->user()->preferences()->updateOrCreate([], $request->all());
         return response()->json($preferences);
     }
 
-      /**
+    /**
      * Fetch personalized articles based on user preferences.
-     *
      * @OA\Get(
      *     path="/api/personalized-feed",
      *     summary="Get personalized news feed based on user preferences",

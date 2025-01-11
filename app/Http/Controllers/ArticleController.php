@@ -61,4 +61,10 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
         return response()->json($article);
     }
+
+    public function dashboard(Request $request)
+    {
+        $articles = Article::paginate(10);  
+        return view('articles.index', compact('articles'));
+    }
 }

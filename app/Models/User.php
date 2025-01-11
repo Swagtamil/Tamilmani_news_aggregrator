@@ -41,4 +41,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function preferences()
+    {
+        return $this->hasOne(Preference::class);  // or hasMany() if the user can have multiple preference records
+    }
 }

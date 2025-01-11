@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
-     /**
+    /**
+     * Register a new user
      * @OA\Post(
      *     path="/api/register",
      *     summary="Register a new user",
@@ -26,13 +29,17 @@ class AuthController extends Controller
      *     @OA\Response(response="422", description="Validation errors")
      * )
      */
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         User::create([
             'name' => $request->name,
@@ -44,6 +51,7 @@ class AuthController extends Controller
     }
 
     /**
+     * Login a user and return a token.
      * @OA\Post(
      *     path="/api/login",
      *     summary="Login a user",
@@ -66,18 +74,18 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $credentials = $request->only('email', 'password');
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        if (auth()->attempt($credentials)) {
+            $token = auth()->user()->createToken('auth_token')->plainTextToken;
+            return response()->json(['token' => $token], 200);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json(['access_token' => $token], 200);
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
-     /**
+    /**
+     * Logout the user by invalidating the token.
      * @OA\Post(
      *     path="/api/logout",
      *     summary="Logout the user",
@@ -91,14 +99,14 @@ class AuthController extends Controller
      *     )
      * )
      */
-
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
 
-     /**
+    /**
+     * Reset user password by sending a reset link.
      * @OA\Post(
      *     path="/api/password/reset",
      *     summary="Reset user password",
@@ -123,7 +131,6 @@ class AuthController extends Controller
      *     )
      * )
      */
-    
     public function resetPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);

@@ -437,6 +437,11 @@
                 "type": "http",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
+            },
+            "Bearer": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization"
             }
         }
     },
